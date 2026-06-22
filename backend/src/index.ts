@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+app.use('/egapp/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customSiteTitle: 'EGApp API Docs',
   customCss: '.swagger-ui .topbar { background-color: #1a1a2e; } .swagger-ui .topbar-wrapper img { content: none; }',
   swaggerOptions: {
@@ -23,7 +23,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   },
 }));
 
-app.get('/api-docs.json', (_req: Request, res: Response) => {
+app.get('/egapp/api-docs.json', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
@@ -42,7 +42,7 @@ app.get('/api-docs.json', (_req: Request, res: Response) => {
  *             schema:
  *               $ref: '#/components/schemas/HealthResponse'
  */
-app.get('/health', (_req: Request, res: Response) => {
+app.get('/egapp/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     project: 'EGApp',
@@ -67,8 +67,8 @@ app.listen(env.port, () => {
   console.log(`  EGApp Backend — Motor SUNAT`);
   console.log(`  Ambiente : ${env.nodeEnv}`);
   console.log(`  Puerto   : ${env.port}`);
-  console.log(`  Health   : http://localhost:${env.port}/health`);
-  console.log(`  API Docs : http://localhost:${env.port}/api-docs`);
+  console.log(`  Health   : http://localhost:${env.port}/egapp/health`);
+  console.log(`  API Docs : http://localhost:${env.port}/egapp/api-docs`);
   console.log('================================================');
 });
 
