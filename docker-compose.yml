@@ -22,6 +22,17 @@ services:
       - SUNAT_GEM_URL=${SUNAT_GEM_URL}
       - SUNAT_PORTAL_URL=${SUNAT_PORTAL_URL}
       - PLAYWRIGHT_HEADLESS=true
+    networks:
+      - default
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.egapp-backend.rule=Host(`api.sparkingcraft.com`) && PathPrefix(`/egapp`)"
+      - "traefik.http.routers.egapp-backend.entrypoints=websecure"
+      - "traefik.http.routers.egapp-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.egapp-backend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.egapp-backend.priority=999"
+      - "traefik.docker.network=dokploy-network"
     depends_on:
       - redis
 
@@ -43,3 +54,7 @@ services:
 volumes:
   redis_data:
     driver: local
+
+networks:
+  dokploy-network:
+    external: true
