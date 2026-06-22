@@ -1,5 +1,4 @@
-import { chromium } from 'playwright';
-import { env } from '../config/env';
+import axios from 'axios';
 
 export interface DniInfo {
   dni: string;
@@ -10,78 +9,54 @@ export interface DniInfo {
 }
 
 /**
- * Scrapea el portal público para obtener los datos de un DNI.
+ * Calcula el código de verificación de un DNI peruano (algoritmo Módulo 11)
+ */
+function calcularCodigoVerificacion(dni: string): string {
+  const multipliers = [3, 2, 7, 6, 5, 4, 3, 2];
+  const hash = [6, 5, 4, 3, 2, 1, 1, 0, 9, 8, 7];
+  
+  let sum = 0;
+  for (let i = 0; i < 8; i++) {
+    sum += parseInt(dni[i], 10) * multipliers[i];
+  }
+  
+  const remainder = sum % 11;
+  return hash[remainder].toString();
+}
+
+/**
+ * Consulta la API de apis.net.pe para obtener los datos de un DNI.
  * @param dni Número de DNI de 8 dígitos
  */
 export async function scrapeDni(dni: string): Promise<DniInfo | null> {
-  // Validar formato básico de DNI
   if (!/^\d{8}$/.test(dni)) {
     throw new Error('DNI inválido. Debe contener exactamente 8 dígitos numéricos.');
   }
 
-  const browser = await chromium.launch({
-    headless: true, // Ejecutar en modo invisible
-    args: ['--no-sandbox', '--disable-setuid-sandbox'], // Necesario para entornos Docker
-  });
-
-  const context = await browser.newContext();
-  const page = await context.newPage();
-
   try {
-    // 1. Navegar a la página
-    await page.goto('https://dniperu.com/buscar-dni-nombres-apellidos/', {
-      waitUntil: 'domcontentloaded',
-      timeout: 15000,
+    const response = await axios.get(`https://api.apis.net.pe/v1/dni?numero=${dni}`, {
+      timeout: 10000,
     });
 
-    // 2. Llenar el formulario
-    await page.fill('#cc_nombres_1dni', dni);
-    
-    // 3. Hacer clic en buscar
-    await page.click('.js-cc-submit');
+    const data = response.data;
 
-    // 4. Esperar a que aparezca el contenedor de resultados y extraer el texto
-    // El texto aparece dentro de un textarea con la clase .js-cc-copy-source
-    const resultSelector = '.js-cc-copy-source';
-    await page.waitForSelector(resultSelector, { state: 'visible', timeout: 10000 });
-    
-    const rawText = await page.inputValue(resultSelector);
-
-    if (!rawText || rawText.trim() === '') {
+    if (!data || !data.nombres) {
       return null;
     }
 
-    // 5. Parsear el texto extraído
-    // Formato esperado:
-    // Numero de DNI: 12345678
-    // Nombres: JUAN PEREZ
-    // Apellido Paterno: PEREZ
-    // Apellido Materno: PEREZ
-    // Codigo de Verificacion: 1
-    
-    const extractLine = (text: string, prefix: string) => {
-      const match = text.match(new RegExp(`${prefix}:\\s*(.+)`, 'i'));
-      return match ? match[1].trim() : '';
+    return {
+      dni: data.numeroDocumento || dni,
+      nombres: data.nombres,
+      apellidoPaterno: data.apellidoPaterno,
+      apellidoMaterno: data.apellidoMaterno,
+      codigoVerificacion: calcularCodigoVerificacion(dni),
     };
 
-    const info: DniInfo = {
-      dni: extractLine(rawText, 'Numero de DNI'),
-      nombres: extractLine(rawText, 'Nombres'),
-      apellidoPaterno: extractLine(rawText, 'Apellido Paterno'),
-      apellidoMaterno: extractLine(rawText, 'Apellido Materno'),
-      codigoVerificacion: extractLine(rawText, 'Codigo de Verificacion'),
-    };
-
-    if (!info.nombres && !info.apellidoPaterno) {
-       return null; // Si no extrajo nada coherente
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      return null; // DNI no encontrado
     }
-
-    return info;
-
-  } catch (error) {
-    console.error('Error durante el scraping del DNI:', error);
+    console.error('Error al consultar DNI en apis.net.pe:', error.message);
     throw new Error('No se pudo validar el DNI en este momento. Inténtelo más tarde.');
-  } finally {
-    await browser.close();
   }
 }
