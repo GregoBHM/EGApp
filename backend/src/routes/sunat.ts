@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/setup-sunat:
+ * /egapp/setup-sunat:
  *   post:
  *     tags: [SUNAT - Onboarding]
  *     summary: Configurar credenciales SUNAT
@@ -62,7 +62,7 @@ router.post('/setup-sunat', async (req: Request, res: Response) => {
 
 /**
  * @openapi
- * /api/emitir-guia:
+ * /egapp/emitir-guia:
  *   post:
  *     tags: [SUNAT - Guías]
  *     summary: Emitir Guía de Remisión Electrónica

@@ -5,7 +5,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/dni/{dni}:
+ * /egapp/dni/{dni}:
  *   get:
  *     tags: [Validación]
  *     summary: Consultar datos de un DNI peruano
