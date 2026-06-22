@@ -17,7 +17,7 @@ export const env = {
   firebase: {
     projectId: requireEnv('FIREBASE_PROJECT_ID'),
     clientEmail: requireEnv('FIREBASE_CLIENT_EMAIL'),
-    privateKey: requireEnv('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n'),
+    privateKey: requireEnv('FIREBASE_PRIVATE_KEY').replace(/\|\|\|/g, '\n').replace(/\\n/g, '\n'),
     storageBucket: requireEnv('FIREBASE_STORAGE_BUCKET'),
   },
 
