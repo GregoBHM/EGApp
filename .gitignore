@@ -1,42 +1,26 @@
-# ========================
-# DEPENDENCIAS
-# ========================
 node_modules/
+dist/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
 build/
 .next/
 
-# ========================
-# VARIABLES DE ENTORNO (NUNCA al repo)
-# ========================
 .env
 .env.local
 .env.production
 
-# ========================
-# FIREBASE
-# ========================
 .firebase/
 firebase-debug.log
 firestore-debug.log
+firebase-admin.json
 
-# ========================
-# SISTEMA OPERATIVO
-# ========================
 .DS_Store
 Thumbs.db
 
-# ========================
-# CERTIFICADOS (NUNCA al repo)
-# ========================
 *.p12
 *.cer
 *.pfx
 
-# ========================
-# LOGS
-# ========================
 *.log
 logs/

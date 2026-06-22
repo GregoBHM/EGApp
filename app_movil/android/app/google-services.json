@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "176753539277",
+    "project_id": "egapp-baf50",
+    "storage_bucket": "egapp-baf50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176753539277:android:cdd65105d41a6db9935184",
+        "android_client_info": {
+          "package_name": "com.egapp.egapp_movil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhhwoSE3ZziQybbgQKAa602OTHxIY0K3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
